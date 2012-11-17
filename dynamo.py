@@ -21,11 +21,13 @@ def tag_with_child(tag, *children, **args):
     open_padding = ""
     close_padding = ""
     if len(children) > 1:
-        children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB), children)
+        children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB),
+            children)
         open_padding = NEWLINE + TAB
         close_padding = NEWLINE
 
-    return make_tag(tag, **args) + open_padding + (NEWLINE + TAB).join(children) + close_padding + close_tag(tag)
+    return make_tag(tag, **args) + open_padding + (NEWLINE + 
+        TAB).join(children) + close_padding + close_tag(tag)
 
 
 def make_tag(tag, **args):
