@@ -59,8 +59,8 @@ This will print out:
 
 There are a few caveats from doing it this way, I'd love to be able to work
 around them but I haven't yet figured out a method to do so:
-    1. The only thing here which I would consider not-immediately-obvious is that your named parameters **must** go last - it's a caveat of the **kwargs stuff in Python.
-    2. You gotta give all the non-closed tag functions something. If you want an empty `<p></p>`, toss in an empty string like `p("")`. Throw it a bone, y'know?
+1. The only thing here which I would consider not-immediately-obvious is that your named parameters **must** go last - it's a caveat of the **kwargs stuff in Python.
+2. You gotta give all the non-closed tag functions something. If you want an empty `<p></p>`, toss in an empty string like `p("")`. Throw it a bone, y'know?
 
 Formatting is also iffy.
 
