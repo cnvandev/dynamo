@@ -59,10 +59,23 @@ This will print out:
 
 There are a few caveats from doing it this way, I'd love to be able to work
 around them but I haven't yet figured out a method to do so:
-1. The only thing here which I would consider not-immediately-obvious is that your named parameters **must** go last - it's a caveat of the **kwargs stuff in Python.
-2. You gotta give all the non-closed tag functions something. If you want an empty `<p></p>`, toss in an empty string like `p("")`. Throw it a bone, y'know?
 
-Formatting is also iffy.
+1. The only thing here which I would consider not-immediately-obvious is that
+your named parameters **must** go last - it's a caveat of the **kwargs stuff in
+Python.
+2. You gotta give all the non-closed tag functions something. If you want an
+empty `<p></p>`, toss in an empty string like `p("")`. Throw it a bone, y'know?
+3. Some HTML tags are reserved keywords or functions in Python - it's a bummer.
+They are `del`, `input`, `map`, and `object`; in addition, `class` is a reserved
+keyword and can't be used in tag attributes. You'll be needing it all over the
+place if you want to generate any HTML of consequence, so to get around that
+limitation, use a capital letter at the start of the word and everthing will be
+A-OK.
+
+Formatting is also iffy, as you can undoubtedly see. It doesn't indent for you
+or do newlines in a satisfactory way, nor does it let you config how any of that
+happens. I'll be looking into this, I'm just letting you know it's not the best
+as of right now.
 
 The syntax style is inspired by (and owes a lot of credit to) the absolute
 classic Perl module CGI.pm (https://github.com/markstos/CGI.pm), which uses an
@@ -70,4 +83,4 @@ awesome functional style
 (see http://cpansearch.perl.org/src/LDS/CGI.pm-3.43/cgi_docs.html for examples.)
 
 (Fun fact: This was initially coded (almost) in its entirety to Dr. Octagon's
-"Dr. Octagonecologyst." Maybe that explains some things.)
+*Dr. Octagonecologyst*. Maybe that explains some things.)
