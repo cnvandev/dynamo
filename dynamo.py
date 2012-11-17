@@ -6,39 +6,58 @@
 START_BRACKET = "<"
 END_BRACKET = ">"
 CLOSER = "/"
+NEWLINE = "\n"
+TAB = "\t"
+SPECIAL_MARKER = "!"
+COMMENT = "--"
 
 
 def tag_with_child(tag, *children, **args):
     ''' Return a string representation of an XML tag that can contain a child
     element.'''
 
-    # List comprehensions are the fastest way to concatenate strings according
-    # to http://www.skymind.com/~ocrow/python_string/
-    return "".join((open_tag(tag, **args),) + children + (close_tag(tag), "\n"))
+    # If we have more than one child, pad the children by one tab and drop the 
+    # child list by one newline.
+    open_padding = ""
+    close_padding = ""
+    if len(children) > 1:
+        children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB), children)
+        open_padding = NEWLINE + TAB
+        close_padding = NEWLINE
+
+    return make_tag(tag, **args) + open_padding + (NEWLINE + TAB).join(children) + close_padding + close_tag(tag)
 
 
-def open_tag(tag, **args):
+def make_tag(tag, **args):
     ''' Given 'string' and a dict of args, returns <string arg1="blah">
     (etc. for more args, you get the idea) '''
 
-    return "".join([START_BRACKET, "".join([tag, format_args(**args)]), END_BRACKET])
+    return START_BRACKET + tag + format_args(**args) + END_BRACKET
 
 
 def close_tag(tag, **args):
     ''' Given 'string', returns </string> '''
 
-    return open_tag("".join(["/", tag]))
+    return make_tag(CLOSER + tag)
 
 
 def closed_tag(tag, **args):
     ''' Returns a self-contained XML tag that cannot contain a child
     element. Think <img src="image.jpg" />.'''
 
-    return open_tag("".join([tag, format_args(**args), " ", CLOSER]))
+    return make_tag(tag + format_args(**args) + " " + CLOSER)
+
+
+def special_tag(tag):
+    ''' Returns a 'special' tag of the form <!tag>, used for doctypes and
+    comments in HTML5. '''
+
+    return make_tag(SPECIAL_MARKER + tag)
 
 
 def format_args(**args):
     ''' Returns a string of XML tag arguments from an unpacked dict. '''
+
     if not args: return ""
 
     return " " + " ".join(["%s=\"%s\"" % (key, value)
@@ -54,13 +73,8 @@ def format_args(**args):
 
 # "Special" tags.
 
-SPECIAL_MARKER = "!"
-COMMENT = "--"
-def comment(text):
-    return open_tag("".join([SPECIAL_MARKER, COMMENT, text, COMMENT])) + "\n"
-
-def doctype(text):
-    return open_tag("".join([SPECIAL_MARKER, "DOCTYPE", " ", text])) + "\n"
+def comment(text): return special_tag(COMMENT + text + COMMENT)
+def doctype(text): return special_tag("DOCTYPE " + text)
 
 # Self-closing tags.
 

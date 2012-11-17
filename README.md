@@ -35,9 +35,9 @@ tags you want. It goes like so:
         body(
             comment("Version one of my page, thanks for checking out the source."),
             h1("This Is My Page", state="Jolly"),
-            p("Check it out, this is a page! It's pretty rad, I'm pretty proud of it, to be honest. I hope you like it!", classish="thing"),
+            p("Check it out, this is a page! It's pretty rad, I'm pretty proud of it, to be honest. I hope you like it!", Class="thing"),
             p("There's not much here, I'm just learning, but here's hoping more will come."),
-            p("&nbsp;"),
+            p(""),
             comment("Important remarks go towards the end."),
             p("Chris Vandevelde is super-hot.")
         )
@@ -45,16 +45,24 @@ tags you want. It goes like so:
 
 This will print out:
 
-    <html><head><title>My Page, Yo</title>
-    <link media="all" href="markup.css" type="text/css" rel="stylesheet" /><meta content="This is my page, yo." name="description" /><meta content="this, is, my, page, awesome, cool" name="keywords" /><meta charset="UTF-8" /></head>
-    <body><!--Version one of my page, thanks for checking out the source.-->
-    <h1 state="Jolly">This Is My Page</h1>
-    <p classish="thing">Check it out, this is a page! It's pretty rad, I'm pretty proud of it, to be honest. I hope you like it!</p>
-    <p>There's not much here, I'm just learning, but here's hoping more will come.</p>
-    <p>&nbsp;</p>
-    <!--Important remarks go towards the end.-->
-    <p>Chris Vandevelde is super-hot.</p>
-    </body>
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>My Page, Yo</title>
+            <link media="all" href="markup.css" type="text/css" rel="stylesheet" />
+            <meta content="This is my page, yo." name="description" />
+            <meta content="this, is, my, page, awesome, cool" name="keywords" />
+            <meta charset="UTF-8" />
+        </head>
+        <body>
+            <!--Version one of my page, thanks for checking out the source.-->
+            <h1 state="Jolly">This Is My Page</h1>
+            <p Class="thing">Check it out, this is a page! It's pretty rad, I'm pretty proud of it, to be honest. I hope you like it!</p>
+            <p>There's not much here, I'm just learning, but here's hoping more will come.</p>
+            <p></p>
+            <!--Important remarks go towards the end.-->
+            <p>Chris Vandevelde is super-hot.</p>
+        </body>
     </html>
 
 There are a few caveats from doing it this way, I'd love to be able to work
