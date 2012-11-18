@@ -73,17 +73,46 @@ your named parameters **must** go last - it's a caveat of the **kwargs stuff in
 Python.
 2. You gotta give all the non-closed tag functions something. If you want an
 empty `<p></p>`, toss in an empty string like `p("")`. Throw it a bone, y'know?
-3. Some HTML tags are reserved keywords or functions in Python - it's a bummer.
+
+## Reserved Words and Non-Pythonic Words ##
+
+Some HTML tags are reserved keywords or functions in Python - it's a bummer.
 They are `del`, `input`, `map`, and `object`; in addition, `class` is a reserved
 keyword and can't be used in tag attributes. You'll be needing it all over the
 place if you want to generate any HTML of consequence, so to get around that
 limitation, use a capital letter at the start of the word and everthing will be
-A-OK.
+A-OK. This method works for functions and attributes, although attributes are
+freeform so I don't do any lowercasing there.
 
-Formatting is also iffy, as you can undoubtedly see. It doesn't indent for you
-or do newlines in a satisfactory way, nor does it let you config how any of that
-happens. I'll be looking into this, I'm just letting you know it's not the best
-as of right now.
+If you want more flexibility over what words you can use for tag attributes, the
+easiest way is to construct and unpack the dict of keyword parameters yourself,
+and pass that to the end of a funciton. For example, Twitter Bootstrap wants
+hyphens in attributes, which Python won't let you do, and needs to use classes
+all over the place. To get around that, you can do:
+
+    print ul(
+        (whatever items you want in here),
+        **{
+            "class": "dropdown_menu",
+            "role": "menu",
+            "aria-labelledBy": "dropdownMenu",
+        }
+    )
+
+which will output
+
+    <ul aria-labelledBy="dropdownMenu" role="menu" class="dropdown-menu">
+        (whatever items you want in here)
+    </ul>
+
+and there you go. Look at that shit, it's beautiful. Just remember to pass the
+dictionary last and unpack it with the `**` and you're golden, pony boy.
+
+## Formatting ##
+
+Dynamo will format HTML for you based the style I was most familiar with when I
+was writing the library. All self-contained tags go on their own new line, as
+do tags with one or no children - they can be pretty much inlined.
 
 The syntax style is inspired by (and owes a lot of credit to) the absolute
 classic Perl module CGI.pm (https://github.com/markstos/CGI.pm), which uses an
