@@ -20,7 +20,7 @@ def tag_with_child(tag, *children, **args):
     # child list by one newline.
     open_padding = ""
     close_padding = ""
-    if len(children) > 1:
+    if len(children) > 1 or (children[0] and children[0][0:1] is START_BRACKET):
         children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB),
             children)
         open_padding = NEWLINE + TAB
