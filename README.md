@@ -19,8 +19,8 @@ this for something so I'll see what I can do at a later time. I take no
 responsibility for your terrible HTML or if you try to lay everything out using
 tables like it's 1998.
 
-To use, just import `dynamo.py` at the top of your file (`import dynamo`) and
-then start creating tags by wrapping your text in functions representing the
+To use, just import `dynamo.py` at the top of your file (`from dynamo import *`)
+and then start creating tags by wrapping your text in functions representing the
 tags you want. It goes like so:
 
     print doctype("html")
@@ -68,9 +68,8 @@ This will print out:
 There are a few caveats from doing it this way, I'd love to be able to work
 around them but I haven't yet figured out a method to do so:
 
-1. The only thing here which I would consider not-immediately-obvious is that
-your named parameters **must** go last - it's a caveat of the **kwargs stuff in
-Python.
+1. If you use the sweet Python named-arguments, they **must** go last - it's a
+caveat of how Python does it.
 2. You gotta give all the non-closed tag functions something. If you want an
 empty `<p></p>`, toss in an empty string like `p("")`. Throw it a bone, y'know?
 
@@ -85,18 +84,18 @@ A-OK. This method works for functions and attributes, although attributes are
 freeform so I don't do any lowercasing there.
 
 If you want more flexibility over what words you can use for tag attributes, the
-easiest way is to construct and unpack the dict of keyword parameters yourself,
-and pass that to the end of a funciton. For example, Twitter Bootstrap wants
-hyphens in attributes, which Python won't let you do, and needs to use classes
-all over the place. To get around that, you can do:
+easiest way is to pass a dict as the first child; Dynamo will automatically
+use that as tag attributes for you. For example, Twitter Bootstrap wants hyphens
+in attributes, which Python won't let you do, and needs to use classes all over
+the place. To get around that, you can do:
 
     print ul(
-        (whatever items you want in here),
-        **{
+        {
             "class": "dropdown_menu",
             "role": "menu",
             "aria-labelledBy": "dropdownMenu",
-        }
+        },
+        (whatever items you want in here)
     )
 
 which will output
@@ -107,6 +106,20 @@ which will output
 
 and there you go. Look at that shit, it's beautiful. Just remember to pass the
 dictionary last and unpack it with the `**` and you're golden, pony boy.
+
+You can also construct and unpack the dict of keyword parameters yourself, and
+pass that to the end of a funciton like so:
+
+    print ul(
+        (whatever items you want in here),
+        **{
+            "class": "dropdown_menu",
+            "role": "menu",
+            "aria-labelledBy": "dropdownMenu",
+        }
+    )
+
+but that's a little messier.
 
 ## Formatting ##
 

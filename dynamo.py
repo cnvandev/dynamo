@@ -20,11 +20,18 @@ def tag_with_child(tag, *children, **args):
     # child list by one newline.
     open_padding = ""
     close_padding = ""
-    if len(children) > 1 or (children[0] and children[0][0:1] is START_BRACKET):
-        children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB),
-            children)
-        open_padding = NEWLINE + TAB
-        close_padding = NEWLINE
+    if len(children) > 1:
+        # If our first child is a dictionary, we're being given the arguments
+        # first. Set args to this hash.
+        if isinstance(children[0], dict):
+            children = list(children)
+            args = children.pop(0)
+
+        if children[0][0:1] is START_BRACKET:
+            children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB),
+                children)
+            open_padding = NEWLINE + TAB
+            close_padding = NEWLINE
 
     return make_tag(tag, **args) + open_padding + (NEWLINE + 
         TAB).join(children) + close_padding + close_tag(tag)
@@ -64,7 +71,6 @@ def format_args(**args):
 
     return " " + " ".join(["%s=\"%s\"" % (key, value)
         for key, value in args.iteritems()])
-
 
 
 # Here it gets boring - these functions are just convenient wrappers for
