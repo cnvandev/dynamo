@@ -7,7 +7,7 @@ print html(
         link(href="markup.css", rel="stylesheet", type="text/css", media="all"),
         meta(name="description", content="This is my page, yo."),
         meta(name="keywords", content="this, is, my, page, awesome, cool"),
-        meta(charset="UTF-8")
+        meta({"charset":"UTF-8"})
     ),
     body(
         comment("Version one of my page, thanks for checking out the source."),

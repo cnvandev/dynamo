@@ -22,7 +22,7 @@ def tag_with_child(tag, *children, **args):
     close_padding = ""
     if len(children) > 1:
         # If our first child is a dictionary, we're being given the arguments
-        # first. Set args to this hash.
+        # first. Set args to this dict.
         if isinstance(children[0], dict):
             children = list(children)
             args = children.pop(0)
@@ -50,9 +50,20 @@ def close_tag(tag, **args):
     return make_tag(CLOSER + tag)
 
 
-def closed_tag(tag, **args):
+def closed_tag(tag, *children, **args):
     ''' Returns a self-contained XML tag that cannot contain a child
     element. Think <img src="image.jpg" />.'''
+
+    # Allow the possibility of a single dict child argument.
+    if len(children) > 0:
+        if len(children) > 1 or not isinstance(children[0], dict):
+            raise AssertionError("Your self-contained <%s /> tag contains a \
+                non-hash child - you are doing it wrong." % tag)
+
+        # If our first child is a dictionary, we're being given the arguments
+        # first. Set args to this dict.
+        children = list(children)
+        args = children.pop(0)
 
     return make_tag(tag + format_args(**args) + " " + CLOSER)
 
@@ -81,21 +92,21 @@ def format_args(**args):
 
 # "Special" tags.
 
-def comment(text): return special_tag(COMMENT + text + COMMENT)
-def doctype(text): return special_tag("DOCTYPE " + text)
+def comment(text): return special_tag(" ".join([COMMENT, text, COMMENT]))
+def doctype(text): return special_tag(" ".join(["DOCTYPE", text]))
 
 # Self-closing tags.
 
-def area(**args): return closed_tag("area", **args)
-def base(**args): return closed_tag("base", **args)
-def br(**args): return closed_tag("br", **args)
-def col(**args): return closed_tag("col", **args)
-def hr(**args): return closed_tag("hr", **args)
-def img(**args): return closed_tag("img", **args)
-def Input(**args): return closed_tag("input", **args)
-def link(**args): return closed_tag("link", **args)
-def meta(**args): return closed_tag("meta", **args)
-def param(**args): return closed_tag("param", **args)
+def area(*children, **args): return closed_tag("area", *children, **args)
+def base(*children, **args): return closed_tag("base", *children, **args)
+def br(*children, **args): return closed_tag("br", *children, **args)
+def col(*children, **args): return closed_tag("col", *children, **args)
+def hr(*children, **args): return closed_tag("hr", *children, **args)
+def img(*children, **args): return closed_tag("img", *children, **args)
+def Input(*children, **args): return closed_tag("input", *children, **args)
+def link(*children, **args): return closed_tag("link", *children, **args)
+def meta(*children, **args): return closed_tag("meta", *children, **args)
+def param(*children, **args): return closed_tag("param", *children, **args)
 
 # Regular tags.
 
