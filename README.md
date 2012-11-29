@@ -8,6 +8,22 @@ the functions provided, and I welcome all suggestions to improve the library.
 Extra-special props will be given to suggestions that simplify or speed up the
 generation.
 
+<<<<<<< HEAD
+=======
+Validation
+----------
+Dynamo will only generate HTML5 elements. Don't bring that `<frameset>` shit in
+here, son, cause we'll knock you out the box.
+
+As of now, Dynamo doesn't do much validation on your end...as in it pretty much
+doesn't do any. It won't check your style or make things pretty for you, all it
+really does is limits the tags you can generate to the tags available. I'd be
+interested in doing some validation in the background, but I'm trying to use
+this for something so I'll see what I can do at a later time. I take no
+responsibility for your terrible HTML or if you try to lay everything out using
+tables like it's 1998.
+
+>>>>>>> 353d383aab09f7252c0f99559fb7b1c9dac8f2ab
 Usage
 -----
 To use, just import `dynamo.py` at the top of your file (`from dynamo import *`)
@@ -59,6 +75,7 @@ This will print out:
         </body>
     </html>
 ```
+<<<<<<< HEAD
 
 Validation
 ----------
@@ -79,6 +96,13 @@ Dynamo will format HTML for you based the style I was most familiar with when I
 was writing the library. All self-contained tags go on their own new line, as
 do tags with one or no children - they can be pretty much inlined. An example of
 the style can be seen above.
+=======
+
+Caveats
+-------
+There are a few caveats from doing it this way, I'd love to be able to work
+around them but I haven't yet figured out a method to do so:
+>>>>>>> 353d383aab09f7252c0f99559fb7b1c9dac8f2ab
 
 Tabs are done with `\t`s, which is probably a bad idea, I don't know. If you
 want to change it to spaces (and any number of spaces! 4, or 2, or whatever man,
@@ -86,11 +110,14 @@ just don't shoot me! Put the gun down, man, it's customizable!), just download
 the source and modify the `TAB` constant. The source is super-tiny, so it's just
 in one place.
 
+<<<<<<< HEAD
 The syntax style is inspired by (and owes a lot of credit to) the absolute
 classic Perl module CGI.pm (https://github.com/markstos/CGI.pm), which uses an
 awesome functional style
 (see http://cpansearch.perl.org/src/LDS/CGI.pm-3.43/cgi_docs.html for examples.)
 
+=======
+>>>>>>> 353d383aab09f7252c0f99559fb7b1c9dac8f2ab
 Reserved Words and Non-Pythonic Words
 -------------------------------------
 Some HTML tags are reserved keywords or functions in Python - it's a bummer.
@@ -145,11 +172,24 @@ pass that to the end of a funciton like so:
 
 but that's a little messier.
 
+<<<<<<< HEAD
 Caveats
 -------
 The only caveat I've run across is that if you use the sweet Python named
 arguments, they **must** go last - it's a caveat of how Python does named
 arguments with unpacked dicts and whatnot.
+=======
+Formatting
+----------
+Dynamo will format HTML for you based the style I was most familiar with when I
+was writing the library. All self-contained tags go on their own new line, as
+do tags with one or no children - they can be pretty much inlined.
+
+The syntax style is inspired by (and owes a lot of credit to) the absolute
+classic Perl module CGI.pm (https://github.com/markstos/CGI.pm), which uses an
+awesome functional style
+(see http://cpansearch.perl.org/src/LDS/CGI.pm-3.43/cgi_docs.html for examples.)
+>>>>>>> 353d383aab09f7252c0f99559fb7b1c9dac8f2ab
 
 (Fun fact: This was initially coded (almost) in its entirety to Dr. Octagon's
 *Dr. Octagonecologyst*. Maybe that explains some things.)
