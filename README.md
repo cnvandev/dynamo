@@ -8,6 +8,8 @@ the functions provided, and I welcome all suggestions to improve the library.
 Extra-special props will be given to suggestions that simplify or speed up the
 generation.
 
+Validation
+----------
 Dynamo will only generate HTML5 elements. Don't bring that `<frameset>` shit in
 here, son, cause we'll knock you out the box.
 
@@ -19,10 +21,13 @@ this for something so I'll see what I can do at a later time. I take no
 responsibility for your terrible HTML or if you try to lay everything out using
 tables like it's 1998.
 
+Usage
+-----
 To use, just import `dynamo.py` at the top of your file (`from dynamo import *`)
 and then start creating tags by wrapping your text in functions representing the
 tags you want. It goes like so:
 
+```python
     print doctype("html")
     print html(
         head(
@@ -42,9 +47,11 @@ tags you want. It goes like so:
             p("Chris Vandevelde is super-hot.")
         )
     )
+```
 
 This will print out:
 
+```html
     <!DOCTYPE html>
     <html>
         <head>
@@ -64,7 +71,10 @@ This will print out:
             <p>Chris Vandevelde is super-hot.</p>
         </body>
     </html>
+```
 
+Caveats
+-------
 There are a few caveats from doing it this way, I'd love to be able to work
 around them but I haven't yet figured out a method to do so:
 
@@ -73,8 +83,8 @@ caveat of how Python does it.
 2. You gotta give all the non-closed tag functions something. If you want an
 empty `<p></p>`, toss in an empty string like `p("")`. Throw it a bone, y'know?
 
-## Reserved Words and Non-Pythonic Words ##
-
+Reserved Words and Non-Pythonic Words
+-------------------------------------
 Some HTML tags are reserved keywords or functions in Python - it's a bummer.
 They are `del`, `input`, `map`, and `object`; in addition, `class` is a reserved
 keyword and can't be used in tag attributes. You'll be needing it all over the
@@ -89,6 +99,7 @@ use that as tag attributes for you. For example, Twitter Bootstrap wants hyphens
 in attributes, which Python won't let you do, and needs to use classes all over
 the place. To get around that, you can do:
 
+```python
     print ul(
         {
             "class": "dropdown_menu",
@@ -97,12 +108,15 @@ the place. To get around that, you can do:
         },
         (whatever items you want in here)
     )
+```
 
 which will output
 
+```html
     <ul aria-labelledBy="dropdownMenu" role="menu" class="dropdown-menu">
         (whatever items you want in here)
     </ul>
+```
 
 and there you go. Look at that shit, it's beautiful. Just remember to pass the
 dictionary last and unpack it with the `**` and you're golden, pony boy.
@@ -110,6 +124,7 @@ dictionary last and unpack it with the `**` and you're golden, pony boy.
 You can also construct and unpack the dict of keyword parameters yourself, and
 pass that to the end of a funciton like so:
 
+```python
     print ul(
         (whatever items you want in here),
         **{
@@ -118,11 +133,12 @@ pass that to the end of a funciton like so:
             "aria-labelledBy": "dropdownMenu",
         }
     )
+```
 
 but that's a little messier.
 
-## Formatting ##
-
+Formatting
+----------
 Dynamo will format HTML for you based the style I was most familiar with when I
 was writing the library. All self-contained tags go on their own new line, as
 do tags with one or no children - they can be pretty much inlined.
