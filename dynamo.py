@@ -1,6 +1,26 @@
-# "Dynamo" - a super-quick HTML generator written by Chris Vandevelde
-# (chris.vandevelde@uwaterloo.ca). Project page is at
-# http://github.com/cnvandev/dynamo
+#!/usr/bin/python
+
+'''
+Dynamo
+======
+
+Dynamo is a super-quick HTML generator written by Chris Vandevelde
+(chris.vandevelde@uwaterloo.ca). You can quickly write HTML in a sweet,
+functional style that mimics actually writing HTML (methinks), so you can get
+away from constructing objects and get back to writin' some HTML code. There
+are awesome libraries for templating (check out Jinja!) and parsing/generating
+HTML in other styles, this one's for someone looking to quickly and
+programmatically generate HTML. Dump it to a file or write it to a request
+stream and you're all good!
+
+More information can be found in the README.md file, a usage sample can be
+found in sample.py, or take a look at the code to see how it works. If you're
+still having problems, let me know and I'll help out if I can.
+
+The project page is at http://github.com/cnvandev/dynamo, feel free to
+contribute or make requests!
+
+'''
 
 # Some constants for us.
 START_BRACKET = "<"
@@ -14,9 +34,11 @@ COMMENT = "--"
 
 def tag_with_child(tag, *children, **args):
     ''' Return a string representation of an XML tag that can contain a child
-    element.'''
+    element.
 
-    # If we have more than one child, pad the children by one tab and drop the 
+    '''
+
+    # If we have more than one child, pad the children by one tab and drop the
     # child list by one newline.
     open_padding = ""
     close_padding = ""
@@ -29,17 +51,19 @@ def tag_with_child(tag, *children, **args):
 
         if children[0][0:1] is START_BRACKET:
             children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB),
-                children)
+                           children)
             open_padding = NEWLINE + TAB
             close_padding = NEWLINE
 
-    return make_tag(tag, **args) + open_padding + (NEWLINE + 
-        TAB).join(children) + close_padding + close_tag(tag)
+    return make_tag(tag, **args) + open_padding + (NEWLINE + TAB).join(
+        children) + close_padding + close_tag(tag)
 
 
 def make_tag(tag, **args):
     ''' Given 'string' and a dict of args, returns <string arg1="blah">
-    (etc. for more args, you get the idea) '''
+    (etc. for more args, you get the idea)
+
+    '''
 
     return START_BRACKET + tag + format_args(**args) + END_BRACKET
 
@@ -52,7 +76,9 @@ def close_tag(tag, **args):
 
 def closed_tag(tag, *children, **args):
     ''' Returns a self-contained XML tag that cannot contain a child
-    element. Think <img src="image.jpg" />.'''
+    element. Think <img src="image.jpg" />.
+
+    '''
 
     # Allow the possibility of a single dict child argument.
     if len(children) > 0:
@@ -70,7 +96,10 @@ def closed_tag(tag, *children, **args):
 
 def special_tag(tag):
     ''' Returns a 'special' tag of the form <!tag>, used for doctypes and
-    comments in HTML5. '''
+    comments in HTML5.
+
+
+    '''
 
     return make_tag(SPECIAL_MARKER + tag)
 
@@ -78,16 +107,17 @@ def special_tag(tag):
 def format_args(**args):
     ''' Returns a string of XML tag arguments from an unpacked dict. '''
 
-    if not args: return ""
+    if not args:
+        return ""
 
-    return " " + " ".join(["%s=\"%s\"" % (key, value)
-        for key, value in args.iteritems()])
+    return " " + " ".join(["%s=\"%s\"" % (key, value) for key, value in
+           args.iteritems()])
 
 
 # Here it gets boring - these functions are just convenient wrappers for
-# the functions above. To add new acceptable HTML tags, add a new function under
-# this comment.
-################################################################################
+# the functions above. To add new acceptable HTML tags, add a new function
+# under this comment.
+###############################################################################
 
 
 # "Special" tags.
