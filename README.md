@@ -42,7 +42,7 @@ tags you want. It goes like so:
             h1("This Is My Page", state="Jolly"),
             p({"class": "thing"}, Check it out, this is a page! It's pretty rad, I'm pretty proud of it, to be honest. I hope you like it!"),
             p("There's not much here, I'm just learning, but here's hoping more will come."),
-            p(""),
+            p(),
             comment("Important remarks go towards the end."),
             p("Chris Vandevelde is super-hot.")
         )
