@@ -22,6 +22,8 @@ contribute or make requests!
 
 '''
 
+import collections
+
 # Some constants for us.
 START_BRACKET = "<"
 END_BRACKET = ">"
@@ -98,7 +100,6 @@ def special_tag(tag):
     ''' Returns a 'special' tag of the form <!tag>, used for doctypes and
     comments in HTML5.
 
-
     '''
 
     return make_tag(SPECIAL_MARKER + tag)
@@ -110,8 +111,31 @@ def format_args(**args):
     if not args:
         return ""
 
-    return " " + " ".join(["%s=\"%s\"" % (key, value) for key, value in
+    return " " + " ".join([format_arg_value(key, value) for key, value in
            args.iteritems()])
+
+
+def format_arg_value(key, value):
+    ''' Returns a string representing an HTML attribute as a key-value pair
+    presented like key="value". If the value is iterable, will return 
+
+    '''
+
+    if isinstance(value, collections.iterable):
+        string = 
+    else:
+        string = value
+
+    return "%s=\"%s\"" % (key, string)
+
+
+def format_list_attribute(list):
+    ''' Returns a "list" value suitable for HTML (for now it's
+    space-delimited strings).
+
+    '''
+
+    return " ".join(value)
 
 
 # Here it gets boring - these functions are just convenient wrappers for
