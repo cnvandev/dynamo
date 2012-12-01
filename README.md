@@ -139,8 +139,7 @@ which will output
     </ul>
 ```
 
-and there you go. Look at that shit, it's beautiful. Just remember to pass the
-dictionary last and unpack it with the `**` and you're golden, pony boy.
+and there you go. Look at that shit, it's beautiful.
 
 You can also construct and unpack the dict of keyword parameters yourself, and
 pass that to the end of a funciton like so:
@@ -156,7 +155,8 @@ pass that to the end of a funciton like so:
     )
 ```
 
-but that's a little messier.
+but that's a little messier. Regardless, just remember to pass the
+dictionary last and unpack it with the `**` and you're golden, pony boy.
 
 Caveats
 -------
