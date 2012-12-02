@@ -125,7 +125,7 @@ def format_arg_value(key, value):
 
     if isinstance(value, collections.Iterable) and not isinstance(value,
         basestring):
-        string = " ".join(value)
+        string = format_list_attribute(value)
     else:
         string = value
 
