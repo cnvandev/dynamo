@@ -46,7 +46,7 @@ def tag_with_child(tag, *children, **args):
     # child list by one newline.
     open_padding = ""
     close_padding = ""
-    if len(children) > 1:
+    if len(children) > 1 and children[0]:
         # If our first child is a dictionary, we're being given the arguments
         # first. Set args to this dict.
         if isinstance(children[0], dict):
