@@ -124,7 +124,7 @@ def format_arg_value(key, value):
     '''
 
     if isinstance(value, collections.iterable):
-        string = 
+        string = " ".join(value)
     else:
         string = value
 
