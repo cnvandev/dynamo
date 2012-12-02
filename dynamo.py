@@ -23,6 +23,7 @@ contribute or make requests!
 '''
 
 import collections
+import traceback
 
 # Some constants for us.
 START_BRACKET = "<"
@@ -41,7 +42,7 @@ def tag_with_child(tag, *children, **args):
     element.
 
     '''
-
+    
     # If we have more than one child, pad the children by one tab and drop the
     # child list by one newline.
     open_padding = ""
@@ -58,8 +59,6 @@ def tag_with_child(tag, *children, **args):
                            children)
             open_padding = NEWLINE + TAB
             close_padding = NEWLINE
-    else:
-        children = []
 
     return make_tag(tag, **args) + open_padding + (NEWLINE + TAB).join(
         children) + close_padding + close_tag(tag)
