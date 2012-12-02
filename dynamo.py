@@ -53,7 +53,7 @@ def tag_with_child(tag, *children, **args):
             children = list(children)
             args = children.pop(0)
 
-        if children[0][0:1] is START_BRACKET:
+        if children[0].startswith(START_BRACKET):
             children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB),
                            children)
             open_padding = NEWLINE + TAB
