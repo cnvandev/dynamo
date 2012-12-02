@@ -27,6 +27,8 @@ import collections
 # Some constants for us.
 START_BRACKET = "<"
 END_BRACKET = ">"
+START_CONDITION = "["
+END_CONDITION = "["
 CLOSER = "/"
 NEWLINE = "\n"
 TAB = "\t"
@@ -148,6 +150,10 @@ def format_list_attribute(list):
 
 def comment(text): return special_tag(" ".join([COMMENT, text, COMMENT]))
 def doctype(text): return special_tag(" ".join(["DOCTYPE", text]))
+def conditional_comment(condition, text):
+    return special_tag("".join([COMMENT, START_CONDITION, condition,
+        END_CONDITION]) + text + special_tag("".join([START_CONDITION, "endif",
+        END_CONDITION, COMMENT]))
 
 # Self-closing tags.
 
