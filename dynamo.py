@@ -39,10 +39,10 @@ COMMENT = "--"
 
 def tag_with_child(tag, *children, **args):
     ''' Return a string representation of an XML tag that can contain a child
-    element.
+    element. All children after the first child must be strings.
 
     '''
-    
+
     # If we have more than one child, pad the children by one tab and drop the
     # child list by one newline.
     open_padding = ""
@@ -133,13 +133,13 @@ def format_arg_value(key, value):
     return "%s=\"%s\"" % (key, string)
 
 
-def format_list_attribute(list):
+def format_list_attribute(list_attribute):
     ''' Returns a "list" value suitable for HTML (for now it's
     space-delimited strings).
 
     '''
 
-    return " ".join(value)
+    return " ".join(list_attribute)
 
 
 # Here it gets boring - these functions are just convenient wrappers for
