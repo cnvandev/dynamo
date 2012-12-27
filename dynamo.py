@@ -43,8 +43,6 @@ def tag_with_child(tag, *children, **args):
 
     '''
 
-    # If we have more than one child, pad the children by one tab and drop the
-    # child list by one newline.
     open_padding = ""
     close_padding = ""
     if len(children) > 1 and children[0]:
@@ -52,8 +50,15 @@ def tag_with_child(tag, *children, **args):
         # first. Set args to this dict.
         if isinstance(children[0], dict):
             children = list(children)
-            args = children.pop(0)
 
+            # If we have both named arguments and first-child arguments, merge
+            # the two.
+            first_child_args = children.pop(0)
+            if args:
+                args = merge_dicts(args, first_child_args)
+
+        # If we have more than one child, pad the children by one tab and drop
+        # the child list by one newline.
         if children[0].startswith(START_BRACKET):
             children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB),
                            children)
@@ -120,7 +125,8 @@ def format_args(**args):
 
 def format_arg_value(key, value):
     ''' Returns a string representing an HTML attribute as a key-value pair
-    presented like key="value". If the value is iterable, will return 
+    presented like key="value". If the value is iterable, will return all values
+    given, joined by spaces.
 
     '''
 
@@ -142,6 +148,37 @@ def format_list_attribute(list_attribute):
     return " ".join(list_attribute)
 
 
+def merge_dicts(hash1, hash2):
+    ''' Merges two dicts together. If one dict contains items in the other dict,
+    the resulting value will be a list containing all values from both dicts.
+
+    '''
+
+    for (key, value) in hash1.iteritems():
+        if key in hash2:
+            # If either values aren't lists, make them so!
+            value = ensure_list(value)
+            hash2[key] = ensure_list(hash2[key])
+
+            # Join the two lists in holy matrimony.
+            hash2[key].extend(value)
+        else:
+            hash2[key] = value
+
+    return hash2
+
+
+def ensure_list(potential_list):
+    ''' Not sure if the given value is a list-like object? Pass it through this
+    and you will be sure.
+
+    '''
+    if isinstance(potential_list, collections.Iterable) and not isinstance(potential_list, basestring):
+        return potential_list
+    else:
+        return [potential_list]
+
+
 # Here it gets boring - these functions are just convenient wrappers for
 # the functions above. To add new acceptable HTML tags, add a new function
 # under this comment.
@@ -153,7 +190,9 @@ def format_list_attribute(list_attribute):
 def comment(text): return special_tag(" ".join([COMMENT, text, COMMENT]))
 def doctype(text): return special_tag(" ".join(["DOCTYPE", text]))
 def conditional_comment(condition, text):
-    return special_tag(COMMENT + START_CONDITION + condition + END_CONDITION) + text + special_tag(START_CONDITION + "endif" + END_CONDITION + COMMENT)
+    return special_tag(COMMENT + START_CONDITION + condition + END_CONDITION) \
+           + text + special_tag(START_CONDITION + "endif" + END_CONDITION +
+           COMMENT)
 
 # Self-closing tags.
 
