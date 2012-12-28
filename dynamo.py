@@ -23,7 +23,7 @@ contribute or make requests!
 '''
 
 import collections
-import traceback
+import __builtin__
 
 # Some constants for us.
 START_BRACKET = "<"
@@ -35,6 +35,22 @@ NEWLINE = "\n"
 TAB = "\t"
 SPECIAL_MARKER = "!"
 COMMENT = "--"
+
+CLOSED_TAGS = ["base", "br", "col", "hr", "img", "input", "link", "meta",
+               "param"]
+OPEN_TAGS = ["a", "abbr", "acronym", "address", "applet", "article", "aside",
+             "audio", "b", "bdi", "bdo", "blockquote", "body", "button",
+             "canvas", "caption", "cite", "code", "colgroup", "command",
+             "datalist", "dd", "del", "details", "dfn", "div", "dl", "dt", "em",
+             "embed", "fieldset", "figcaption", "figure", "footer", "form",
+             "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup",
+             "html", "i", "iframe", "ins", "kbd", "keygen", "label", "legend",
+             "li", "map", "mark", "menu", "meter", "nav", "noscript", "object",
+             "ol", "optgroup", "option", "output", "p", "pre", "progress", "q",
+             "rp", "rt", "ruby", "s", "samp", "script", "section", "select",
+             "small", "source", "span", "strong", "style", "sub", "summary",
+             "sup", "table", "tbody", "td", "textarea", "tfoot", "th", "thead",
+             "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"]
 
 
 def tag_with_child(tag, *children, **args):
@@ -173,139 +189,66 @@ def ensure_list(potential_list):
     and you will be sure.
 
     '''
-    if isinstance(potential_list, collections.Iterable) and not isinstance(potential_list, basestring):
+
+    if isinstance(potential_list, collections.Iterable) and \
+       not isinstance(potential_list, basestring):
         return potential_list
     else:
         return [potential_list]
 
 
-# Here it gets boring - these functions are just convenient wrappers for
-# the functions above. To add new acceptable HTML tags, add a new function
-# under this comment.
-###############################################################################
+def add_leaf_tag_function(tag):
+    ''' Adds a function to generate a specific self-closing/"leaf" tag (like 
+        <img src="blah" />, with the slash) to the current module.
+
+    '''
+
+    docstring = "Returns a self-closing <%s /> tag with" % tag + \
+                           " provided children and attributes."
+    add_tag_function(tag, docstring, closed_tag)
 
 
-# "Special" tags.
+def add_parent_tag_function(tag):
+    ''' Adds a function to generate a specific XML tag (like <a href="blah">
+        link</a>) to the current module.
 
-def comment(text): return special_tag(" ".join([COMMENT, text, COMMENT]))
-def doctype(text): return special_tag(" ".join(["DOCTYPE", text]))
+    '''
+
+    docstring = "Returns a <%s> tag with provided children" % tag + \
+                           " and attributes."
+    add_tag_function(tag, docstring, tag_with_child)
+
+
+def add_tag_function(tag, docstring, inner_function, ):
+    # Make sure we don't run into any namespace conflicts!
+    if tag in dir(__builtin__):
+        tag = tag.capitalize()
+
+    current_module = __import__(__name__)
+    def tag_function(*children, **args):
+        return inner_function(tag, *children, **args)
+
+    tag_function.__doc__ = docstring
+    tag_function.__name__ = "%s" % tag
+    setattr(current_module, tag_function.__name__, tag_function)    
+
+
+# Functions for "special" tags.
+def comment(text):
+    return special_tag(" ".join([COMMENT, text, COMMENT]))
+
+def doctype(text):
+    return special_tag(" ".join(["DOCTYPE", text]))
+
 def conditional_comment(condition, text):
     return special_tag(COMMENT + START_CONDITION + condition + END_CONDITION) \
            + text + special_tag(START_CONDITION + "endif" + END_CONDITION +
            COMMENT)
 
-# Self-closing tags.
 
-def area(*children, **args): return closed_tag("area", *children, **args)
-def base(*children, **args): return closed_tag("base", *children, **args)
-def br(*children, **args): return closed_tag("br", *children, **args)
-def col(*children, **args): return closed_tag("col", *children, **args)
-def hr(*children, **args): return closed_tag("hr", *children, **args)
-def img(*children, **args): return closed_tag("img", *children, **args)
-def Input(*children, **args): return closed_tag("input", *children, **args)
-def link(*children, **args): return closed_tag("link", *children, **args)
-def meta(*children, **args): return closed_tag("meta", *children, **args)
-def param(*children, **args): return closed_tag("param", *children, **args)
+# Generate the functions for us to use! Oooohh, DRY code.
+for tag in CLOSED_TAGS:
+    add_leaf_tag_function(tag)
 
-# Regular tags.
-
-def a(*children, **args): return tag_with_child("a", *children, **args)
-def abbr(*children, **args): return tag_with_child("abbr", *children, **args)
-def acronym(*children, **args): return tag_with_child("acronym", *children, **args)
-def address(*children, **args): return tag_with_child("address", *children, **args)
-def applet(*children, **args): return tag_with_child("applet", *children, **args)
-def article(*children, **args): return tag_with_child("article", *children, **args)
-def aside(*children, **args): return tag_with_child("aside", *children, **args)
-def audio(*children, **args): return tag_with_child("audio", *children, **args)
-def b(*children, **args): return tag_with_child("b", *children, **args)
-def bdi(*children, **args): return tag_with_child("bdi", *children, **args)
-def bdo(*children, **args): return tag_with_child("bdo", *children, **args)
-def blockquote(*children, **args): return tag_with_child("blockquote", *children, **args)
-def body(*children, **args): return tag_with_child("body", *children, **args)
-def button(*children, **args): return tag_with_child("button", *children, **args)
-def canvas(*children, **args): return tag_with_child("canvas", *children, **args)
-def caption(*children, **args): return tag_with_child("caption", *children, **args)
-def cite(*children, **args): return tag_with_child("cite", *children, **args)
-def code(*children, **args): return tag_with_child("code", *children, **args)
-def colgroup(*children, **args): return tag_with_child("colgroup", *children, **args)
-def command(*children, **args): return tag_with_child("command", *children, **args)
-def datalist(*children, **args): return tag_with_child("datalist", *children, **args)
-def dd(*children, **args): return tag_with_child("dd", *children, **args)
-def Del(*children, **args): return tag_with_child("del", *children, **args)
-def details(*children, **args): return tag_with_child("details", *children, **args)
-def dfn(*children, **args): return tag_with_child("dfn", *children, **args)
-def div(*children, **args): return tag_with_child("div", *children, **args)
-def dl(*children, **args): return tag_with_child("dl", *children, **args)
-def dt(*children, **args): return tag_with_child("dt", *children, **args)
-def em(*children, **args): return tag_with_child("em", *children, **args)
-def embed(*children, **args): return tag_with_child("embed", *children, **args)
-def fieldset(*children, **args): return tag_with_child("fieldset", *children, **args)
-def figcaption(*children, **args): return tag_with_child("figcaption", *children, **args)
-def figure(*children, **args): return tag_with_child("figure", *children, **args)
-def footer(*children, **args): return tag_with_child("footer", *children, **args)
-def form(*children, **args): return tag_with_child("form", *children, **args)
-def h1(*children, **args): return tag_with_child("h1", *children, **args)
-def h2(*children, **args): return tag_with_child("h2", *children, **args)
-def h3(*children, **args): return tag_with_child("h3", *children, **args)
-def h4(*children, **args): return tag_with_child("h4", *children, **args)
-def h5(*children, **args): return tag_with_child("h5", *children, **args)
-def h6(*children, **args): return tag_with_child("h6", *children, **args)
-def head(*children, **args): return tag_with_child("head", *children, **args)
-def header(*children, **args): return tag_with_child("header", *children, **args)
-def hgroup(*children, **args): return tag_with_child("hgroup", *children, **args)
-def html(*children, **args): return tag_with_child("html", *children, **args)
-def i(*children, **args): return tag_with_child("i", *children, **args)
-def iframe(*children, **args): return tag_with_child("iframe", *children, **args)
-def ins(*children, **args): return tag_with_child("ins", *children, **args)
-def kbd(*children, **args): return tag_with_child("kbd", *children, **args)
-def keygen(*children, **args): return tag_with_child("keygen", *children, **args)
-def label(*children, **args): return tag_with_child("label", *children, **args)
-def legend(*children, **args): return tag_with_child("legend", *children, **args)
-def li(*children, **args): return tag_with_child("li", *children, **args)
-def Map(*children, **args): return tag_with_child("map", *children, **args)
-def mark(*children, **args): return tag_with_child("mark", *children, **args)
-def menu(*children, **args): return tag_with_child("menu", *children, **args)
-def meter(*children, **args): return tag_with_child("meter", *children, **args)
-def nav(*children, **args): return tag_with_child("nav", *children, **args)
-def noscript(*children, **args): return tag_with_child("noscript", *children, **args)
-def Object(*children, **args): return tag_with_child("object", *children, **args)
-def ol(*children, **args): return tag_with_child("ol", *children, **args)
-def optgroup(*children, **args): return tag_with_child("optgroup", *children, **args)
-def option(*children, **args): return tag_with_child("option", *children, **args)
-def output(*children, **args): return tag_with_child("output", *children, **args)
-def p(*children, **args): return tag_with_child("p", *children, **args)
-def pre(*children, **args): return tag_with_child("pre", *children, **args)
-def progress(*children, **args): return tag_with_child("progress", *children, **args)
-def q(*children, **args): return tag_with_child("q", *children, **args)
-def rp(*children, **args): return tag_with_child("rp", *children, **args)
-def rt(*children, **args): return tag_with_child("rt", *children, **args)
-def ruby(*children, **args): return tag_with_child("ruby", *children, **args)
-def s(*children, **args): return tag_with_child("s", *children, **args)
-def samp(*children, **args): return tag_with_child("samp", *children, **args)
-def script(*children, **args): return tag_with_child("script", *children, **args)
-def section(*children, **args): return tag_with_child("section", *children, **args)
-def select(*children, **args): return tag_with_child("select", *children, **args)
-def small(*children, **args): return tag_with_child("small", *children, **args)
-def source(*children, **args): return tag_with_child("source", *children, **args)
-def span(*children, **args): return tag_with_child("span", *children, **args)
-def strong(*children, **args): return tag_with_child("strong", *children, **args)
-def style(*children, **args): return tag_with_child("style", *children, **args)
-def sub(*children, **args): return tag_with_child("sub", *children, **args)
-def summary(*children, **args): return tag_with_child("summary", *children, **args)
-def sup(*children, **args): return tag_with_child("sup", *children, **args)
-def table(*children, **args): return tag_with_child("table", *children, **args)
-def tbody(*children, **args): return tag_with_child("tbody", *children, **args)
-def td(*children, **args): return tag_with_child("dt", *children, **args)
-def textarea(*children, **args): return tag_with_child("textarea", *children, **args)
-def tfoot(*children, **args): return tag_with_child("tfoot", *children, **args)
-def th(*children, **args): return tag_with_child("th", *children, **args)
-def thead(*children, **args): return tag_with_child("thead", *children, **args)
-def time(*children, **args): return tag_with_child("time", *children, **args)
-def title(*children, **args): return tag_with_child("title", *children, **args)
-def tr(*children, **args): return tag_with_child("tr", *children, **args)
-def track(*children, **args): return tag_with_child("track", *children, **args)
-def u(*children, **args): return tag_with_child("u", *children, **args)
-def ul(*children, **args): return tag_with_child("ul", *children, **args)
-def var(*children, **args): return tag_with_child("var", *children, **args)
-def video(*children, **args): return tag_with_child("video", *children, **args)
-def wbr(*children, **args): return tag_with_child("wbr", *children, **args)
+for tag in OPEN_TAGS:
+    add_parent_tag_function(tag)
