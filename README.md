@@ -141,23 +141,6 @@ which will output
 
 and there you go. Look at that shit, it's beautiful.
 
-You can also construct and unpack the dict of keyword parameters yourself, and
-pass that to the end of a funciton like so:
-
-```python
-    print ul(
-        (whatever items you want in here),
-        **{
-            "class": "dropdown_menu",
-            "role": "menu",
-            "aria-labelledBy": "dropdownMenu",
-        }
-    )
-```
-
-but that's a little messier. Regardless, just remember to pass the
-dictionary last and unpack it with the `**` and you're golden, pony boy.
-
 Caveats
 -------
 The only caveat I've run across is that if you use the sweet Python named
