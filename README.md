@@ -132,7 +132,9 @@ Caveats
 -------
 The only caveat I've run across is that if you use the sweet Python named
 arguments, they **must** go last - it's a caveat of how Python does named
-arguments with unpacked dicts and whatnot.
+arguments with unpacked dicts and whatnot. It feels to have tag attributes
+at the end, yeah, but you can just use the dict-first method to make
+everything OK again.
 
 (Fun fact: This was initially coded (almost) in its entirety to Dr. Octagon's
 *Dr. Octagonecologyst*. Maybe that explains some things.)
