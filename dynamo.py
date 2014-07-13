@@ -4,14 +4,10 @@
 Dynamo
 ======
 
-Dynamo is a super-quick HTML generator written by Chris Vandevelde
-(chris.vandevelde@uwaterloo.ca). You can quickly write HTML in a sweet,
-functional style that mimics actually writing HTML (methinks), so you can get
-away from constructing objects and get back to writin' some HTML code. There
-are awesome libraries for templating (check out Jinja!) and parsing/generating
-HTML in other styles, this one's for someone looking to quickly and
-programmatically generate HTML. Dump it to a file or write it to a request
-stream and you're all good!
+Dynamo is a super-quick code generator written by Chris Vandevelde
+(chris.vandevelde@uwaterloo.ca). You can quickly write code in a sweet,
+functional style that makes everything pretty straightforward. Dump it
+to a file or write it to a request stream and you're all good!
 
 More information can be found in the README.md file, a usage sample can be
 found in sample.py, or take a look at the code to see how it works. If you're
@@ -22,39 +18,22 @@ contribute or make requests!
 
 '''
 
-import collections
 import __builtin__
-
-# Some constants for us.
-START_BRACKET = "<"
-END_BRACKET = ">"
-START_CONDITION = "["
-END_CONDITION = "["
-CLOSER = "/"
-NEWLINE = "\n"
-TAB = "\t"
-SPECIAL_MARKER = "!"
-COMMENT = "--"
-
-CLOSED_TAGS = ["base", "br", "col", "hr", "img", "input", "link", "meta",
-               "param"]
-OPEN_TAGS = ["a", "abbr", "acronym", "address", "applet", "article", "aside",
-             "audio", "b", "bdi", "bdo", "blockquote", "body", "button",
-             "canvas", "caption", "cite", "code", "colgroup", "command",
-             "datalist", "dd", "del", "details", "dfn", "div", "dl", "dt", "em",
-             "embed", "fieldset", "figcaption", "figure", "footer", "form",
-             "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup",
-             "html", "i", "iframe", "ins", "kbd", "keygen", "label", "legend",
-             "li", "map", "mark", "menu", "meter", "nav", "noscript", "object",
-             "ol", "optgroup", "option", "output", "p", "pre", "progress", "q",
-             "rp", "rt", "ruby", "s", "samp", "script", "section", "select",
-             "small", "source", "span", "strong", "style", "sub", "summary",
-             "sup", "table", "tbody", "td", "textarea", "tfoot", "th", "thead",
-             "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"]
+import collections
+import json
 
 
-def tag_with_child(tag, *children, **args):
-    ''' Return a string representation of an XML tag that can contain a child
+# Parse language definition files.
+def load_definition(language):
+    language_dict = json.load(open("languages/" + language + ".json"))
+    language = collections.namedtuple('Language', language_dict.keys())(*language_dict.values())
+    return language
+
+language = load_definition("html")
+
+
+def block_with_child(block, *children, **args):
+    ''' Return a string representation of a code block that can contain a child
     element. All children after the first child must be strings.
 
     '''
@@ -75,33 +54,33 @@ def tag_with_child(tag, *children, **args):
 
         # If we have more than one child, pad the children by one tab and drop
         # the child list by one newline.
-        if children[0].startswith(START_BRACKET):
-            children = map(lambda child: child.replace(NEWLINE, NEWLINE + TAB),
+        if children[0].startswith(language.start_block):
+            children = map(lambda child: child.replace(language.newline, language.newline + language.indent),
                            children)
-            open_padding = NEWLINE + TAB
-            close_padding = NEWLINE
+            open_padding = language.newline + language.indent
+            close_padding = language.newline
 
-    return make_tag(tag, **args) + open_padding + (NEWLINE + TAB).join(
-        children) + close_padding + close_tag(tag)
+    return open_block_with_args(block, **args) + open_padding + (language.newline + language.indent).join(
+        children) + close_padding + close_block(block)
 
 
-def make_tag(tag, **args):
+def open_block_with_args(block, **args):
     ''' Given 'string' and a dict of args, returns <string arg1="blah">
     (etc. for more args, you get the idea)
 
     '''
 
-    return START_BRACKET + tag + format_args(**args) + END_BRACKET
+    return language.start_block + block + format_args(**args) + language.end_block
 
 
-def close_tag(tag, **args):
+def close_block(block, **args):
     ''' Given 'string', returns </string> '''
 
-    return make_tag(CLOSER + tag)
+    return open_block_with_args(language.closer + block)
 
 
-def closed_tag(tag, *children, **args):
-    ''' Returns a self-contained XML tag that cannot contain a child
+def closed_block(block, *children, **args):
+    ''' Returns a self-contained XML block that cannot contain a child
     element. Think <img src="image.jpg" />.
 
     '''
@@ -109,28 +88,28 @@ def closed_tag(tag, *children, **args):
     # Allow the possibility of a single dict child argument.
     if len(children) > 0:
         if len(children) > 1 or not isinstance(children[0], dict):
-            raise AssertionError("Your self-contained <%s /> tag contains a \
-                non-hash child - you are doing it wrong." % tag)
+            raise AssertionError("Your self-contained <%s /> block contains a \
+                non-hash child - you are doing it wrong." % block)
 
         # If our first child is a dictionary, we're being given the arguments
         # first. Set args to this dict.
         children = list(children)
         args = children.pop(0)
 
-    return make_tag(tag + format_args(**args) + " " + CLOSER)
+    return open_block_with_args(block + format_args(**args) + " " + language.closer)
 
 
-def special_tag(tag):
-    ''' Returns a 'special' tag of the form <!tag>, used for doctypes and
+def special_block(block):
+    ''' Returns a 'special' block of the form <!block>, used for doctypes and
     comments in HTML5.
 
     '''
 
-    return make_tag(SPECIAL_MARKER + tag)
+    return open_block_with_args(language.special_marker + block)
 
 
 def format_args(**args):
-    ''' Returns a string of XML tag arguments from an unpacked dict. '''
+    ''' Returns a string of XML block arguments from an unpacked dict. '''
 
     if not args:
         return ""
@@ -156,7 +135,7 @@ def format_arg_value(key, value):
 
 
 def format_list_attribute(list_attribute):
-    ''' Returns a "list" value suitable for HTML (for now it's
+    ''' Returns a "list" value suilanguage.indentle for HTML (for now it's
     space-delimited strings).
 
     '''
@@ -197,58 +176,58 @@ def ensure_list(potential_list):
         return [potential_list]
 
 
-def add_leaf_tag_function(tag):
-    ''' Adds a function to generate a specific self-closing/"leaf" tag (like 
+def add_leaf_block_function(block):
+    ''' Adds a function to generate a specific self-closing/"leaf" block (like 
         <img src="blah" />, with the slash) to the current module.
 
     '''
 
-    docstring = "Returns a self-closing <%s /> tag with" % tag + \
+    docstring = "Returns a self-closing <%s /> block with" % block + \
                            " provided children and attributes."
-    add_tag_function(tag, docstring, closed_tag)
+    add_block_function(block, docstring, closed_block)
 
 
-def add_parent_tag_function(tag):
-    ''' Adds a function to generate a specific XML tag (like <a href="blah">
+def add_parent_block_function(block):
+    ''' Adds a function to generate a specific XML block (like <a href="blah">
         link</a>) to the current module.
 
     '''
 
-    docstring = "Returns a <%s> tag with provided children" % tag + \
+    docstring = "Returns a <%s> block with provided children" % block + \
                            " and attributes."
-    add_tag_function(tag, docstring, tag_with_child)
+    add_block_function(block, docstring, block_with_child)
 
 
-def add_tag_function(tag, docstring, inner_function, ):
+def add_block_function(block, docstring, inner_function, ):
     # Make sure we don't run into any namespace conflicts!
-    if tag in dir(__builtin__):
-        tag = tag.capitalize()
+    if block in dir(__builtin__):
+        block = block.capitalize()
 
     current_module = __import__(__name__)
-    def tag_function(*children, **args):
-        return inner_function(tag, *children, **args)
+    def block_function(*children, **args):
+        return inner_function(block, *children, **args)
 
-    tag_function.__doc__ = docstring
-    tag_function.__name__ = "%s" % tag
-    setattr(current_module, tag_function.__name__, tag_function)    
+    block_function.__doc__ = docstring
+    block_function.__name__ = str("%s" % block)
+    setattr(current_module, block_function.__name__, block_function)    
 
 
-# Functions for "special" tags.
+# Functions for "special" blocks.
 def comment(text):
-    return special_tag(" ".join([COMMENT, text, COMMENT]))
+    return special_block(" ".join([language.comment, text, language.comment]))
 
 def doctype(text):
-    return special_tag(" ".join(["DOCTYPE", text]))
+    return special_block(" ".join(["DOCTYPE", text]))
 
 def conditional_comment(condition, text):
-    return special_tag(COMMENT + START_CONDITION + condition + END_CONDITION) \
-           + text + special_tag(START_CONDITION + "endif" + END_CONDITION +
-           COMMENT)
+    return special_block(language.comment + language.start_condition + condition + language.end_condition) \
+           + text + special_block(language.start_condition + "endif" + language.end_condition +
+           language.comment)
 
 
 # Generate the functions for us to use! Oooohh, DRY code.
-for tag in CLOSED_TAGS:
-    add_leaf_tag_function(tag)
+for block in language.closed_blocks:
+    add_leaf_block_function(block)
 
-for tag in OPEN_TAGS:
-    add_parent_tag_function(tag)
+for block in language.open_blocks:
+    add_parent_block_function(block)

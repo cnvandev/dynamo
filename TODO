@@ -1,0 +1,5 @@
+TODO
+================================================
+
+- close_block will always be passed the name of the block it opened, although it doesn't have to use it. Probably passed in the tag it opened and a string representing the pattern to close it, either including the name of the block or not.
+- Block types might need to be defined...right now we have named blocks but like there are self-closing blocks sometimes, special blocks that are wrapped by certain characters, there's also unnamed blocks (think CSS) that have attributes. The generic functon "block" will be to cover unnamed blocks.
