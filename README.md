@@ -8,19 +8,6 @@ the functions provided, and I welcome all suggestions to improve the library.
 Extra-special props will be given to suggestions that simplify or speed up the
 generation.
 
-Validation
-----------
-Dynamo will only generate HTML5 elements. Don't bring that `<frameset>` shit in
-here, son, cause we'll knock you out the box.
-
-As of now, Dynamo doesn't do much validation on your end...as in it pretty much
-doesn't do any. It won't check your style or make things pretty for you, all it
-really does is limits the tags you can generate to the tags available. I'd be
-interested in doing some validation in the background, but I'm trying to use
-this for something so I'll see what I can do at a later time. I take no
-responsibility for your terrible HTML or if you try to lay everything out using
-tables like it's 1998.
-
 Usage
 -----
 To use, just import `dynamo.py` at the top of your file (`from dynamo import *`)
@@ -141,28 +128,13 @@ which will output
 
 and there you go. Look at that shit, it's beautiful.
 
-You can also construct and unpack the dict of keyword parameters yourself, and
-pass that to the end of a funciton like so:
-
-```python
-    print ul(
-        (whatever items you want in here),
-        **{
-            "class": "dropdown_menu",
-            "role": "menu",
-            "aria-labelledBy": "dropdownMenu",
-        }
-    )
-```
-
-but that's a little messier. Regardless, just remember to pass the
-dictionary last and unpack it with the `**` and you're golden, pony boy.
-
 Caveats
 -------
 The only caveat I've run across is that if you use the sweet Python named
 arguments, they **must** go last - it's a caveat of how Python does named
-arguments with unpacked dicts and whatnot.
+arguments with unpacked dicts and whatnot. It feels to have tag attributes
+at the end, yeah, but you can just use the dict-first method to make
+everything OK again.
 
 (Fun fact: This was initially coded (almost) in its entirety to Dr. Octagon's
 *Dr. Octagonecologyst*. Maybe that explains some things.)
