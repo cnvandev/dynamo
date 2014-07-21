@@ -21,6 +21,7 @@ contribute or make requests!
 import __builtin__
 import collections
 import json
+import copy
 
 
 # Parse language definition files.
@@ -28,8 +29,6 @@ def load_definition(language):
     language_dict = json.load(open("languages/" + language + ".json"))
     language = collections.namedtuple('Language', language_dict.keys())(*language_dict.values())
     return language
-
-language = load_definition("html")
 
 
 def block_with_child(block, *children, **args):
@@ -96,16 +95,7 @@ def closed_block(block, *children, **args):
         children = list(children)
         args = children.pop(0)
 
-    return open_block_with_args(block + format_args(**args) + " " + language.closer)
-
-
-def special_block(block):
-    ''' Returns a 'special' block of the form <!block>, used for doctypes and
-    comments in HTML5.
-
-    '''
-
-    return open_block_with_args(language.special_marker + block)
+    return open_block_with_args(block + format_args(**args) + language.delimeter + language.closer)
 
 
 def format_args(**args):
@@ -114,7 +104,7 @@ def format_args(**args):
     if not args:
         return ""
 
-    return " " + " ".join([format_arg_value(key, value) for key, value in
+    return language.delimeter + language.delimeter.join([format_arg_value(key, value) for key, value in
            args.iteritems()])
 
 
@@ -131,16 +121,16 @@ def format_arg_value(key, value):
     else:
         string = value
 
-    return "%s=\"%s\"" % (key, string)
+    return language.arg_format % (key, string)
 
 
 def format_list_attribute(list_attribute):
-    ''' Returns a "list" value suilanguage.indentle for HTML (for now it's
+    ''' Returns a "list" value suitable for HTML (for now it's
     space-delimited strings).
 
     '''
 
-    return " ".join(list_attribute)
+    return language.delimeter.join(list_attribute)
 
 
 def merge_dicts(hash1, hash2):
@@ -209,20 +199,39 @@ def add_block_function(block, docstring, inner_function, ):
 
     block_function.__doc__ = docstring
     block_function.__name__ = str("%s" % block)
-    setattr(current_module, block_function.__name__, block_function)    
+    setattr(current_module, block_function.__name__, block_function)
 
 
-# Functions for "special" blocks.
-def comment(text):
-    return special_block(" ".join([language.comment, text, language.comment]))
+# Functions for "special" blocks, defined in the JSON.
+def add_special_function(name, definition_items):
+    def special_function(*children, **args):
+        # Copy the function definition so we can modify it here.
+        function_definition = copy.copy(definition_items)
+        
+        # Do some mangling of the arguments list. If it's null, we sub in an
+        # argument from the arguments list (content, other special stuff for the
+        # function definition), if it's the name of a language prop, sub that
+        # in.
+        argument_index = 1 # The first child is the function name, so skip it.
+        for index, item in enumerate(function_definition):
+            if item is None:
+                function_definition[index] = language.delimeter + children[argument_index]
 
-def doctype(text):
-    return special_block(" ".join(["DOCTYPE", text]))
+                # If we're not the last tag in the list, add another delimeter.
+                if (argument_index +2 != len(function_definition)):
+                    function_definition[index] += language.delimeter
 
-def conditional_comment(condition, text):
-    return special_block(language.comment + language.start_condition + condition + language.end_condition) \
-           + text + special_block(language.start_condition + "endif" + language.end_condition +
-           language.comment)
+                argument_index += 1
+            elif hasattr(language, item):
+                function_definition[index] = getattr(language, item)
+
+        tag_content = "".join(function_definition)
+        return open_block_with_args(tag_content + "".join(children[argument_index:]), **args)
+
+    add_block_function(name, "", special_function)
+
+
+language = load_definition("html")
 
 
 # Generate the functions for us to use! Oooohh, DRY code.
@@ -231,3 +240,6 @@ for block in language.closed_blocks:
 
 for block in language.open_blocks:
     add_parent_block_function(block)
+    
+for (special_function, definition_items) in language.special_functions.iteritems():
+    add_special_function(special_function, definition_items)

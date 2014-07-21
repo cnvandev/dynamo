@@ -9,5 +9,12 @@
     "special_marker": "!",
     "comment": "--",
     "closed_blocks": ["base", "br", "col", "hr", "img", "input", "link", "meta", "param"],
-    "open_blocks": ["a", "abbr", "acronym", "address", "applet", "article", "aside", "audio", "b", "bdi", "bdo", "blockquote", "body", "button", "canvas", "caption", "cite", "code", "colgroup", "command", "datalist", "dd", "del", "details", "dfn", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "html", "i", "iframe", "ins", "kbd", "keygen", "label", "legend", "li", "map", "mark", "menu", "meter", "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", "select", "small", "source", "span", "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"]
+    "open_blocks": ["a", "abbr", "acronym", "address", "applet", "article", "aside", "audio", "b", "bdi", "bdo", "blockquote", "body", "button", "canvas", "caption", "cite", "code", "colgroup", "command", "datalist", "dd", "del", "details", "dfn", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "html", "i", "iframe", "ins", "kbd", "keygen", "label", "legend", "li", "map", "mark", "menu", "meter", "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", "select", "small", "source", "span", "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"],
+    "delimeter": " ",
+    "arg_format": "%s=\"%s\"",
+    "special_functions": {
+        "comment": ["special_marker", "comment", null, "comment"],
+        "doctype": ["special_marker", "DOCTYPE", null],
+        "conditional_comment": [["special_marker", "comment", "start_condition", null, "end_condition"], null, ["special_marker", "start_condition", "endif", "end_condition", "comment"]]
+    }
 }
